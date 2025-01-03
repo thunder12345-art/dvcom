@@ -1,0 +1,100 @@
+import math
+import numpy as np
+
+def f(x):
+    a = 5.3525
+    b = 10
+    c=604
+    k1=5.4662
+    b1=5.5695
+    k2=-5.6142
+    b2=-5.7289
+    if x<c:
+        return math.log10((k1 *(400-x)*0.005 + b1)/b)*100/a+np.random.random()*1
+    else: 
+        if x>c :
+            return math.log10((k2*(400-x)*0.005 +b2)/b)*100/a+np.random.random()*1
+        else:
+            return -57.6674601131004
+
+#2PDVCOM
+def dvcom2p(a,b):
+
+    #采集Flicker，使用Jeita 模组，采集时间大于222ms(<4.5Hz)
+    y1=10*math.pow(10,5.3525*f(a)/100)
+    y2=10*math.pow(10,5.3525*f(b)/100)
+    best_vcom=round((a*y2-b*y1)/(y2-y1))
+    #print(best_vcom)
+    return best_vcom
+
+
+
+
+#使用背光常亮模式，duty100%
+#光学探头CA410或者C33等采样此需要<4.5Hz 
+#开始3P2B vcom调节
+#定义参数，Step必须是2的指数倍
+count=0 #调节次数
+step=16 #调节步频
+vcomb=580
+vcoma=vcomb-step
+vcomc=vcomb+step
+#开始测试A B C三个点
+count=count+3
+#print(vcoma,f(vcoma),vcomb,f(vcomb),vcomc,f(vcomc),count)
+
+#开始进行三点二分法调节Vcom
+while count<50:
+    if f(vcomb) < f(vcoma):
+        if f(vcomb) > f(vcomc):
+            if step>=8:
+                vcomb=dvcom2p(vcoma,vcomb)
+                #print(count,vcomb)
+                step=1
+                vcoma=vcomb-step
+                vcomc=vcomb+step
+                count=count+3
+            else:
+                vcoma=vcomb
+                vcomb=vcomc
+                vcomc=vcomc+step
+                count=count+1
+            
+        else :
+            if step <=1:
+                break
+            step=step/2
+            vcoma=vcoma
+            vcomc=vcomb
+            vcomb=round((vcoma+vcomb)/2)
+            count=count+1
+            #print(vcomb,f(vcomb),count,step)
+    else:
+        if f(vcomb) <= f(vcomc):
+            if step>=8:
+                vcomb=dvcom2p(vcomb,vcomc)
+                print(count,vcomb)
+                step=1
+                vcoma=vcomb-step
+                vcomc=vcomb+step
+                count=count+3
+            #print(vcomb,f(vcomb),count,step)
+            else:
+                vcomc=vcomb
+                vcomb=vcoma
+                vcoma=vcoma-step
+                count=count+1
+            
+        else :
+            if step <=1:
+                break
+            step=step/2
+            vcoma=vcomb
+            vcomc=vcomc
+            vcomb=round((vcomb+vcomc)/2)
+            count=count+1
+            #print(vcomb,f(vcomb),count,step)
+
+
+print('数据测试次数是',count)
+print('Vcom2是',vcomb,'3点2分 Flicker是',f(vcomb))
