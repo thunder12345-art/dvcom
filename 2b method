@@ -1,0 +1,59 @@
+import math
+import numpy as np
+
+def f(x):
+    a = 5.3525
+    b = 10
+    c=604
+    k1=5.4662
+    b1=5.5695
+    k2=-5.6142
+    b2=-5.7289
+    if x<c:
+        return math.log10((k1 *(400-x)*0.005 + b1)/b)*100/a+np.random.random()*1
+    else: 
+        if x>c :
+            return math.log10((k2*(400-x)*0.005 +b2)/b)*100/a+np.random.random()*1
+        else:
+            return -57.6674601131004
+
+
+
+
+
+
+
+#print ('2B-VCOM')
+
+
+a=554
+b=606
+maxiter=20
+mid=8
+#print(a,b)
+num_iter = 2
+while num_iter < maxiter:
+    mid =round ((a + b)/2,0)
+    hjfg=round((b-a)/2,0)
+    if f(a) > f(b):
+        if hjfg <1:
+            extreme_x = b
+            break
+        a = mid
+        #print(f(a),f(b))
+
+    else:
+        if hjfg <1:
+            extreme_x = a
+            break
+        b = mid
+        #print(f(a),f(b))
+    num_iter += 1
+#f(extreme_x)
+
+#print('x is',extreme_x,'y is',extreme_y)
+#print('测试次数是',num_iter)
+#print(extreme_x)
+print('测试次数',num_iter)
+print('最优Vcom',extreme_x,'最佳flicker是',f(extreme_x))
+
