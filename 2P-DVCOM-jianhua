@@ -1,0 +1,30 @@
+import numpy as np
+import math
+def f(x):
+    a = 5.3525
+    b = 10
+    c=555
+    k1=5.9389
+    b1=4.5976
+    k2=-6.2239
+    b2=-4.8409
+    if x<c:
+        return math.log10((k1 *(400-x)*0.005 + b1)/b)*100/a+np.random.random()*0
+    else: 
+        if x>c :
+            return math.log10((k2*(400-x)*0.005 +b2)/b)*100/a+np.random.random()*0
+        else:
+            return -72.178041299797
+
+
+
+#2P DVCOM
+x1=500
+x2=530
+#采集Flicker，使用Jeita 模组，采集时间大于222ms(<4.5Hz)
+y1=10*math.pow(10,5.3525*f(x1)/100)
+y2=10*math.pow(10,5.3525*f(x2)/100)
+
+best_vcom=round((x1*y2-x2*y1)/(y2-y1))
+#best_vcom=round((x1*y2-x2*y1)/(y2-y1))
+print(best_vcom)
